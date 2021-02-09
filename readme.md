@@ -47,6 +47,9 @@ $ mkcert create-cert --help
 const mkcert = require('mkcert');
 
 // create a certificate authority
+
+
+async function createC(){
 const ca = await mkcert.createCA({
   organization: 'Hello CA',
   countryCode: 'NP',
@@ -54,15 +57,27 @@ const ca = await mkcert.createCA({
   locality: 'Kathmandu',
   validityDays: 365
 });
+return ca;
+}
 
 // then create a tls certificate
+
+async function createG(m){
 const cert = await mkcert.createCert({
   domains: ['127.0.0.1', 'localhost'],
   validityDays: 365,
-  caKey: ca.key,
-  caCert: ca.cert
+  caKey: m.key,
+  caCert: m.cert
+});
+return cert;
+}
+
+const ca = createC().then(res1 => {
+	const cert = createG(res1).then(res2 => {
+		console.log(res2.key, res2.cert); // create a full chain certificate by merging CA and domain certificates
+	});
+	
 });
 
-console.log(cert.key, cert.cert); // certificate info
-console.log(`${cert.cert}\n${ca.cert}`); // create a full chain certificate by merging CA and domain certificates
+
 ```
